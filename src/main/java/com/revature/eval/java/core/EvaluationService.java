@@ -1,6 +1,9 @@
 package com.revature.eval.java.core;
 
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -131,7 +134,31 @@ public class EvaluationService {
 	 */
 	public int getScrabbleScore(String string) {
 		// TODO Write an implementation for this method declaration
-		return 0;
+		int score = 0;
+		
+		
+		char[] letters = string.toUpperCase().toCharArray();
+		
+		for (char c : letters) {
+			if ("AEIOULNRST".indexOf(c) >= 0) {
+				score += 1;
+			} else if ("DG".indexOf(c) >= 0) {
+				score += 2;
+			} else if ("BCMP".indexOf(c) >= 0) {
+				score += 3;
+			} else if ("FHVWY".indexOf(c) >= 0) {
+				score += 4;
+			} else if ("K".indexOf(c) >= 0) {
+				score += 5;
+			} else if ("JX".indexOf(c) >= 0) {
+				score += 8;
+			} else if ("QZ".indexOf(c) >= 0) {
+				score += 10;
+			} else {
+				score+=0;
+			}
+		}
+		return score;
 	}
 
 	/**
@@ -167,7 +194,11 @@ public class EvaluationService {
 	 */
 	public String cleanPhoneNumber(String string) {
 		// TODO Write an implementation for this method declaration
-		return null;
+		String updatedString = string.replaceAll("[\\+1[^0-9]]", "");
+		if (updatedString.length() != 10) {
+			throw new IllegalArgumentException();
+		}
+		return updatedString;
 	}
 
 	/**
@@ -181,7 +212,16 @@ public class EvaluationService {
 	 */
 	public Map<String, Integer> wordCount(String string) {
 		// TODO Write an implementation for this method declaration
-		return null;
+		Map<String, Integer> storedWords = new HashMap<>();
+		String[] words = string.split(",\\n|[\\s+,]");
+		for (String word : words) {
+			if (storedWords.containsKey(word)) {
+				storedWords.put(word, storedWords.get(word) + 1);
+			} else {
+				storedWords.put(word, 1);
+			}
+		}
+		return storedWords;
 	}
 
 	/**
@@ -221,12 +261,32 @@ public class EvaluationService {
 	 */
 	static class BinarySearch<T> {
 		private List<T> sortedList;
+		
 
 		public int indexOf(T t) {
-			// TODO Write an implementation for this method declaration
-			return 0;
+			int top = 0;
+			int end = (sortedList.size() % 2 == 0) ? sortedList.size() - 1 : sortedList.size();
+			
+			while (true) {
+							
+				// check if value (t) exists in the middle of list
+				if (sortedList.get((top + end)/ 2).equals(t)) {
+					return (top + end) / 2;
+				}
+				// if t is > than value in middle of list, check t against value in mid of list to right
+				else if (Integer.parseInt(sortedList.get(sortedList.size() / 2).toString()) <  Integer.parseInt(t.toString())) {
+					top = (top + end) / 2;
+				}
+				// if t is < then value in middle of list, check t against value in the mid of list to the left
+				else if (Integer.parseInt(sortedList.get(sortedList.size() / 2).toString()) >  Integer.parseInt(t.toString())) {
+					end = (top + end) / 2;
+				} else if (top == end) {
+					return -1;
+				}
+			}
 		}
-
+		
+		
 		public BinarySearch(List<T> sortedList) {
 			super();
 			this.sortedList = sortedList;
@@ -260,8 +320,48 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String toPigLatin(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+
+		StringBuilder sb = new StringBuilder("");
+		String[] words = string.split("\\s+");
+		
+		for (int i = 0, len = words.length; i < len; i++) {
+			if (words[i].startsWith("a") || words[i].startsWith("e") || words[i].startsWith("i") || words[i].startsWith("o") || words[i].startsWith("u")) {
+				sb.append(string + "ay");
+			}
+			else {
+				char[] strToChar = words[i].toCharArray();
+				StringBuilder pigString = new StringBuilder("");
+				int counter = 0;
+				// check each letter of string and make sure it is a consonant (not a vowel)
+				
+				for (char c : strToChar) {
+					if ("aeiou".indexOf(c) < 0) {
+						counter++;
+					} else {
+						break;
+					}
+				}
+				
+				if (words[i].indexOf("qu") == 0 || words[i].indexOf("qu") == 1) {
+					counter++;
+				}
+				
+				for (int j = counter; j < words[i].length(); j++) {
+					pigString.append(strToChar[j]);
+				}
+				
+				for (int k = 0; k < counter; k++) {
+					pigString.append(strToChar[k]);
+				}
+				pigString.append("ay");
+				sb.append(pigString.toString());	
+			} 
+
+			if (i != len - 1) {
+				sb.append(" ");
+			}
+		}
+		return sb.toString();
 	}
 
 	/**
@@ -280,8 +380,27 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isArmstrongNumber(int input) {
-		// TODO Write an implementation for this method declaration
-		return false;
+
+		if (input == 0) {
+			return false;
+		} else if (input >= 1 && input < 10) {
+			return true;
+		} else {
+			
+			char[] inputToStr = Integer.toString(input).toCharArray();
+			int currentNum = 0;
+			int finalNum = 0;
+			
+			for (int i = 0, len = inputToStr.length; i < len; i++) {
+				currentNum = Character.getNumericValue(inputToStr[i]);
+				finalNum += (int) Math.pow(currentNum, len);
+			}
+			if (input == finalNum) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
 	/**
@@ -295,9 +414,25 @@ public class EvaluationService {
 	 * @return
 	 */
 	public List<Long> calculatePrimeFactorsOf(long l) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		List<Long> primes = new ArrayList<>();
+		long currentPrimeTotal = 1;
+		long updatedL = l;
+		while (currentPrimeTotal != l) {
+			// find smallest prime and add to primes 
+			for (long i = 2; i <= updatedL; i++) {
+				if (updatedL % i == 0) {
+					primes.add(i);
+					currentPrimeTotal *= i;
+					updatedL /= i;
+					break;
+				}
+			}			
+		}
+		
+		return primes;
 	}
+	
+	 
 
 	/**
 	 * 11. Create an implementation of the rotational cipher, also sometimes called
@@ -334,8 +469,32 @@ public class EvaluationService {
 		}
 
 		public String rotate(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			char[] strToChar = string.toCharArray();
+			int charNum = 0;
+			
+			for (int i = 0, len = strToChar.length; i < len; i++ ) {
+				if (!Character.isAlphabetic(strToChar[i])) {
+					continue;
+				}
+				
+				charNum = strToChar[i] + key;
+				if (Character.isUpperCase(strToChar[i]) && charNum > 90) {
+					while (charNum > 90) {
+						charNum -= 90;
+						charNum += 64;
+					}
+				} else if (Character.isLowerCase(strToChar[i]) && charNum > 122) {
+					
+					while (charNum > 122) {
+						charNum -= 122;
+						charNum += 96;
+					}
+					
+				}
+				strToChar[i] = (char) (charNum);
+			}
+			
+			return new String(strToChar);
 		}
 
 	}
