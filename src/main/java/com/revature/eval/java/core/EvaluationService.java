@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.stream.events.Characters;
+
 public class EvaluationService {
 
 	/**
@@ -512,8 +514,32 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int calculateNthPrime(int i) {
-		// TODO Write an implementation for this method declaration
+		
+		// testBigPrime takes a few seconds to process
+		
+		if (i == 1) {
+			return 2;
+		} else if (i == 0) {
+			throw new IllegalArgumentException();
+		}
+		
+		long iSquared = (long) Math.pow(i, 2); 
+		int primeCounter = 0;
+		
+		for (long j = 2; j < iSquared; j++) {
+			
+			
+			
+			if (calculatePrimeFactorsOf(j).size() == 1) {
+				primeCounter++;
+			}
+			if (primeCounter == i) {
+				return (int) j;
+			}
+		}
+		
 		return 0;
+		
 	}
 
 	/**
@@ -549,8 +575,27 @@ public class EvaluationService {
 		 * @return
 		 */
 		public static String encode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			
+			StringBuilder sb = new StringBuilder("");
+			int groupCounter = 0;
+			char[] strToChar = string.toLowerCase().toCharArray();
+			
+			for (char c : strToChar) {
+				
+				if (Character.isAlphabetic(c)) {
+					sb.append((char) (122 - (c - 97)));
+					groupCounter++;
+						
+				} else if (Character.isDigit(c)) {
+					sb.append(c);
+					groupCounter++;
+				}
+				
+				if (groupCounter % 5 == 0) {
+					sb.append(" ");
+				}
+			}
+			return sb.toString().replaceAll("\\s+", " ");
 		}
 
 		/**
@@ -560,8 +605,20 @@ public class EvaluationService {
 		 * @return
 		 */
 		public static String decode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			
+			char[] strToChar = string.toLowerCase().toCharArray();
+			
+			for (int i = 0; i < strToChar.length; i++) {
+				
+				if (Character.isAlphabetic(strToChar[i])) {
+					strToChar[i] = (char) (97 + (122 - strToChar[i]));
+						
+				} else {
+					strToChar[i] = strToChar[i];
+				}
+
+			}
+			return new String(strToChar).replaceAll("\\s+", "");
 		}
 	}
 
@@ -588,7 +645,39 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isValidIsbn(String string) {
-		// TODO Write an implementation for this method declaration
+		
+		int validISBN = 0;
+		
+		char[] numbers = string.replace("-", "").toCharArray();
+		
+		for (int i = numbers.length, j = 0; i > 0; i--, j++) {
+			
+			if (!Character.isDigit(numbers[9]) && numbers[9] != 'X') {
+				return false;
+			} 
+			
+			if (Character.isAlphabetic(numbers[i]) && numbers[9] != 'X') {
+				return false;
+			}
+			
+			if (Character.isAlphabetic(numbers[j])) {
+				return false;
+			}
+			
+			if(Character.isDigit(numbers[j])) {
+				validISBN = (Character.getNumericValue(numbers[j]) * i) + validISBN;
+			} 
+			
+			if(numbers[9] == 'X' && i == 10) {
+				validISBN = (Character.getNumericValue(numbers[j]) * i) + validISBN;
+				break;
+			}
+		}
+		
+		if (validISBN % 11 == 0) {
+			return true;
+		}
+		
 		return false;
 	}
 
